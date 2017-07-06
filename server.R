@@ -45,10 +45,9 @@ function(input,output){
       
       # creating test and train data
       for(i in 1:input$sample){
-        indices = sample(floor(dim(data)[1]*.80),floor(dim(data)[1]*.20))
+        indices = sample(floor(dim(newdata)[1]*.80),floor(dim(newdata)[1]*.20))
         train<-newdata[indices,]
         test<-newdata[-indices,]
-        
         # Making variables Training and Test 
         train_wf=train[,input$variables]
         test_wf=test[,input$variables]
@@ -56,26 +55,29 @@ function(input,output){
         # Making the classifications column as factor      
         train_fv1=as.factor(train[,input$FacVac])
         test_fv1=as.factor(test[,input$FacVac])
-        #print(head(train_fv1,5))
+        print(head(train_fv1,5))
         
         # Creating a model with kNN
         #Model-1
-        m1=knn(train_wf, test_wf, cl=train_fv1, k = input$knn, l = 0, prob = FALSE, use.all = TRUE)      
+        m1=knn(train_wf, test_wf, cl=train_fv1, k = input$knn, l = 0, prob = FALSE, use.all = TRUE)   
+        #print(m1)
         p1=table(test_fv1, m1)
+        #print(p1)
         results1=round(prop.table(p1, 1), 3) * 100
-        unq=length(unique(train_fv1))
-        for(j in 1:unq){
-          df[i,j]=results1[j,j]
-          }
+        #unq=length(unique(train_fv1))
+        #for(j in 1:unq){
+         # df[i,j]=results1[j,j]
+        #}
+        #print(df)
       }
-      m=input$sample+1
-      unq=length(unique(train_fv1))
-      for(j in 1:4){
-        df[m,j]=mean(df[,j])
-        df[m+1,j]=sd(df[,j])
-        j=j+1
-      }
-      write.csv(df,"results.csv")
+      #m=input$sample+1
+      #unq=length(unique(train_fv1))
+      #for(j in 1:4){
+      # df[m,j]=mean(df[,j])
+      # df[m+1,j]=sd(df[,j])
+      #  j=j+1
+      #}
+      write.csv(results1,"results.csv")
       
       output$table<-renderDataTable({
         read.csv("results.csv")
