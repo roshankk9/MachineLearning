@@ -28,3 +28,19 @@ d=(noquote(colnames(train)[1]))
 fit<-randomForest(input$FacVAr~input$variables,data=train,mtry=2,ntree=input$NTree)
 test$classification<-predict(fit,newdata=test,response='class')
 text=length(which(test$Genre != test$classification))/dim(test)[1]
+
+# code 1
+#unq=length(unique(train_fv1))
+#for(j in 1:unq){
+# df[i,j]=results1[j,j]
+#}
+#print(df)
+#}
+#m=input$sample+1
+#unq=length(unique(train_fv1))
+#for(j in 1:4){
+# df[m,j]=mean(df[,j])
+# df[m+1,j]=sd(df[,j])
+#  j=j+1
+#}
+# end od code 1

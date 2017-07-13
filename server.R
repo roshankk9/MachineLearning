@@ -1,16 +1,18 @@
 function(input,output){
 
-   output$contents <- renderDataTable({
-    infile <- input$file1
+#-------Displaying the data file---------------
+   output$data_input <- renderDataTable({
+    infile <- input$file
     if (is.null(infile)) {
       # User has not uploaded a file yet
       return(NULL)
         }
     read.csv(infile$datapath)
      })
-   
+#--------END OF DATA INPUT---------------------  
+#--------UI for K-Nearest Neighbour------------
    output$select<-renderUI({
-     infile=input$file1
+     infile=input$file
      data=read.csv(infile$datapath)
      mainPanel(
        fluidRow(
@@ -30,21 +32,39 @@ function(input,output){
         )
         )# end of panal
         })
+#-----------END OF KNN UI----------------------
+#-----------Data Status------------------------
+   status<- eventReactive(input$file,{
+     infile=input$file
+     
+     #Reading File
+     data=read.csv(infile$datapath)
+     
+     #Checking data completion status
+     if(any(is.na(data))=="TRUE"){
+        return(HTML("<h2>Data Status:</h2><h3>Missing Data</h3><h4>Relax We Will Fix It</h4>"))
+     }
+     else
+       return(HTML("<h2>Data Status:</h2><h3> No Missing Data"))
+   })
+#-----------K-Nearest Calcuations-------------
    
-    value<-eventReactive(input$results,{
-      #output$table=renderDataTable(input$results,{
-      
+   value<-eventReactive(input$results,{
+
       df=data.frame()
       #Selecting data
-      infile=input$file1
+      infile=input$file
       
       #Reading File
       data=read.csv(infile$datapath)
-      newdata=na.omit(data)
-      set.seed(1)
       
-      # creating test and train data
-      for(i in 1:input$sample){
+      #Filling Data
+      m=mice(data=data,m=1)
+      #Picking data from filled data
+      newdata=complete(m,1)
+      #for(i in 1:input$sample){
+       
+      #creating test and train data
         indices = sample(floor(dim(newdata)[1]*.80),floor(dim(newdata)[1]*.20))
         train<-newdata[indices,]
         test<-newdata[-indices,]
@@ -59,32 +79,19 @@ function(input,output){
         
         # Creating a model with kNN
         #Model-1
-        m1=knn(train_wf, test_wf, cl=train_fv1, k = input$knn, l = 0, prob = FALSE, use.all = TRUE)   
-        #print(m1)
-        p1=table(test_fv1, m1)
+        knn_model=knn(train_wf, test_wf, cl=train_fv1, k = input$knn, l = 0, prob = FALSE, use.all = TRUE)   
+        result=table(test_fv1, knn_model)
         #print(p1)
-        results1=round(prop.table(p1, 1), 3) * 100
-        #unq=length(unique(train_fv1))
-        #for(j in 1:unq){
-         # df[i,j]=results1[j,j]
-        #}
-        #print(df)
-      }
-      #m=input$sample+1
-      #unq=length(unique(train_fv1))
-      #for(j in 1:4){
-      # df[m,j]=mean(df[,j])
-      # df[m+1,j]=sd(df[,j])
-      #  j=j+1
-      #}
-      write.csv(results1,"results.csv")
+        f_results=round(prop.table(result, 1), 3) * 100
+        # code1 in rough.R
+         write.csv(f_results,"results.csv")
       
       output$table<-renderDataTable({
         read.csv("results.csv")
       })
       
       })
-      output$resul=renderUI(value())
-      
+   output$results=renderUI(value())
+   output$data_status=renderUI(status())
  
 	}#end of shinyServer
