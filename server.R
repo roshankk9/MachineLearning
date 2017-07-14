@@ -25,7 +25,8 @@ function(input,output){
               ),# end of 1st row
        fluidRow(
          column(6,
-                sliderInput('knn','Select No. of Nearest neighbour',min = 1,max=100,value =10),
+                sliderInput('knn','Select No. of Nearest neighbour',min = 1,max=100,value =10)),
+         column(6,
                 sliderInput('sample','Select  no. of sample required',min = 1,max=100,value =10),
                 actionButton("results","Get Results")
          )# end of 1 column
@@ -57,11 +58,17 @@ function(input,output){
       
       #Reading File
       data=read.csv(infile$datapath)
-      
+      if(any(is.na(data))=="TRUE"){
       #Filling Data
       m=mice(data=data,m=1)
       #Picking data from filled data
       newdata=complete(m,1)
+      }
+      else
+      {
+        newdata=data
+      }
+    
       #for(i in 1:input$sample){
        
       #creating test and train data
@@ -75,7 +82,7 @@ function(input,output){
         # Making the classifications column as factor      
         train_fv1=as.factor(train[,input$FacVac])
         test_fv1=as.factor(test[,input$FacVac])
-        print(head(train_fv1,5))
+        #print(head(train_fv1,5))
         
         # Creating a model with kNN
         #Model-1
@@ -83,15 +90,16 @@ function(input,output){
         result=table(test_fv1, knn_model)
         #print(p1)
         f_results=round(prop.table(result, 1), 3) * 100
+        colnames(f_results)=unique(test_fv1)
         # code1 in rough.R
          write.csv(f_results,"results.csv")
+         output$table<-renderDataTable({
+           read.csv("results.csv",header=TRUE)
       
-      output$table<-renderDataTable({
-        read.csv("results.csv")
-      })
-      
-      })
+        })
+   
+  
+   })
    output$results=renderUI(value())
    output$data_status=renderUI(status())
- 
 	}#end of shinyServer

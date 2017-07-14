@@ -14,6 +14,10 @@ dashboardPage(
         tags$head(
         tags$link(rel="stylesheet",href="style.css")
         ),
+        tags$style(type="text/css",
+                   ".shiny-output-error { visibility: hidden; }",
+                   ".shiny-output-error:before { visibility: hidden; }"
+        ),
         tabItems(
             tabItem(tabName = "file",
                     HTML("<h1> Data Uploader</h1>"),
@@ -28,14 +32,13 @@ dashboardPage(
                     mainPanel(
                       fluidRow(
                         column(6,
-                      uiOutput("select"),
-                      uiOutput("results"),
-                      uiOutput("data_status")),
+                          uiOutput("select"),
+                          uiOutput("results")),
                       column(6,
-                      HTML("<h1>Results</h1>"),      
-                      dataTableOutput("table")))
-                    )
-                      ),#end of tabItem
+                          HTML("<h1>Results</h1>"),      
+                          dataTableOutput("table"),
+                          uiOutput("data_status"))
+                      ))),#end of tabItem
             tabItem(tabName='rf',
                     HTML("<h1> Random Forest </h1>"),
                     mainPanel(
