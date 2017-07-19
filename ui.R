@@ -14,6 +14,7 @@ dashboardPage(
         tags$head(
         tags$link(rel="stylesheet",href="style.css")
         ),
+        # Error hiding code
         tags$style(type="text/css",
                    ".shiny-output-error { visibility: hidden; }",
                    ".shiny-output-error:before { visibility: hidden; }"
@@ -32,12 +33,12 @@ dashboardPage(
                     mainPanel(
                       fluidRow(
                         column(6,
-                          uiOutput("select"),
-                          uiOutput("results")),
-                      column(6,
-                          HTML("<h1>Results</h1>"),      
+                          uiOutput("select")),
+                        column(6,
+                          uiOutput("data_status"),
+                          HTML("<h1>Results</h1>"),
                           dataTableOutput("table"),
-                          uiOutput("data_status"))
+                          uiOutput("results"))
                       ))),#end of tabItem
             tabItem(tabName='rf',
                     HTML("<h1> Random Forest </h1>"),

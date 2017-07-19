@@ -43,10 +43,10 @@ function(input,output){
      
      #Checking data completion status
      if(any(is.na(data))=="TRUE"){
-        return(HTML("<h2>Data Status:</h2><h3>Missing Data</h3><h4>Relax We Will Fix It</h4>"))
+        return(HTML("<h2>Data Status:</h2><h3 style='color:red;'>Missing Data</h3><h4>Relax We Will Fix It</h4>"))
      }
      else
-       return(HTML("<h2>Data Status:</h2><h3> No Missing Data"))
+       return(HTML("<h2>Data Status:</h2><h3 style='color:blue;'> No Missing Data"))
    })
 #-----------K-Nearest Calcuations-------------
    
